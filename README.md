@@ -4,9 +4,9 @@ A brief script for filling fields of a PDF with forms with data fetched from a .
 ## Requirements
 You will need to install pdfrw (read/write .pdf) and openpyxl (read/write .xlsx) libraries. To do so, run the following, if you're on linux:
 
-    ``` bash
-    sudo pip install pdfrw openpyxl
-	```
+``` bash
+sudo pip install pdfrw openpyxl
+```
 
 It is not yet finished, and may not be useful for you for porpuses other than consulting or inspiration.
 
