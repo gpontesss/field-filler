@@ -15,6 +15,7 @@ values = {
 template = PdfReader(file)
 for field in template.Root.Pages.Kids[0].Annots:
     
+    #Field label
     label = field.T
     
     rct = field.Rect
@@ -30,8 +31,12 @@ for field in template.Root.Pages.Kids[0].Annots:
     )
 
     value = values[label]
-    xobj.stream = "/Tx BMC\nBT\n /Helvetica 8.0 Tf\n 1.0 5.0 Td\n 0 g\n (" + value + ") Tj\nET EMC"
 
+    #Change the value of field when not foccused
+    xobj.stream = "/Tx BMC\nBT\n /Helvetica 8.0 Tf\n 1.0 5.0 Td\n 0 g\n (" + value + ") Tj\nET EMC"
     template.Root.AcroForm.Fields[template.Root.Pages.Kids[0].Annots.index(field)].AP = PdfDict(N = xobj)
 
+    #Change the value when field is foccused
+    field.V = value
+    
 PdfWriter().write('test-out.pdf', template)
