@@ -4,3 +4,4 @@
 *.pdf
 microsoft.gpg
 *.xlsx?
+*.pyc

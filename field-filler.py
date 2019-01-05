@@ -1,84 +1,28 @@
-#A brief script for filling PDF fields with data fetched from a .xlsx file (Excel)
+#Author: gpontesss
+#Date of creation: 02-01-2019
+#Description:
+#	A brief script for filling PDF fields with data fetched from a .xlsx file (Excel)
+
 from pdfrw import PdfReader, PdfWriter, PdfDict, IndirectPdfDict, PdfName
 from openpyxl import load_workbook
+from pdfform import PdfForm
+from xlsxread import read_worksheet
 
-file = 'tester.pdf'
+xlsx_filename = 'data.xlsx'
+worksheet_name ='data'
+pdf_template_filename = 'template.pdf'
 
-#Open .xlsx file as Workbook
-wb = load_workbook('data.xlsx')
-#Open sheet on wb acessing it by name index
-ws = wb[u'fields-data']
+#Open .xlsx file as Workbook and get worksheet by name
+workbook = load_workbook(xlsx_filename)
+worksheet = workbook[worksheet_name]
 
-def read_data():
-	map = {}
-	data = []
+pdf_form = PdfForm(pdf_template_filename)
+data = read_worksheet(worksheet)
 
-	#Get column names and map to their title
-	for cell in ws[1]:
-		map[cell.column] = cell.value
+if filter(lambda x: x == False, map(lambda x: x.keys() == pdf_form.field_names(), data)):
+	raise ValueError("Columns of xlsx file doesn't match with pdf template fields.")
 
-	for row in ws.iter_rows(min_row=2, max_col=len(map.keys()), max_row=ws.max_row):
-		person_data = {}
-		for cell in row:
-			person_data[map[cell.column]] = cell.value
-		if not filter(lambda x: x is not None, person_data.values()):
-			break
-		data.append(person_data)
-
-	return data
-
-xlsx_data = read_data()
-
-template = PdfReader(file)
-
-#Updates a field with value passed as argument
-def update_field(field, value):
-	 
-	rct = field.Rect
-	height = round(float(rct[3]) - float(rct[1]), 2)
-	width = round(float(rct[2]) - float(rct[0]), 2)
-
-	xobj = IndirectPdfDict(
-		BBox = [0, 0, width, height],
-		FormType = 1,
-		Resources = PdfDict(Prosec = [PdfName.PDF, PdfName.Text]),
-		Subtype = PdfName.Form,
-		Type = PdfName.XObject
-	)
-
-	#Change the value of field when not foccused
-	xobj.stream = "/Tx BMC\nBT\n /Helvetica 8.0 Tf\n 1.0 5.0 Td\n 0 g\n (" + value + ") Tj\nET EMC"
-	template.Root.AcroForm.Fields[template.Root.Pages.Kids[0].Annots.index(field)].AP = PdfDict(N = xobj)
-
-	#Change the value when field is foccused
-	field.update(PdfDict(V=value))
-	return field
-
-for obj in xlsx_data:
-	for field in template.Root.Pages.Kids[0].Annots:
-
-		#Field label
-		label = field.T
-
-		rct = field.Rect
-		height = round(float(rct[3]) - float(rct[1]), 2)
-		width = round(float(rct[2]) - float(rct[0]), 2)
-
-		xobj = IndirectPdfDict(
-			BBox = [0, 0, width, height],
-			FormType = 1,
-			Resources = PdfDict(Prosec = [PdfName.PDF, PdfName.Text]),
-			Subtype = PdfName.Form,
-			Type = PdfName.XObject
-		)
-
-		#Change the value of field when not foccused
-		xobj.stream = "/Tx BMC\nBT\n /Helvetica 8.0 Tf\n 1.0 5.0 Td\n 0 g\n (" + str(obj[label]) + ") Tj\nET EMC"
-		template.Root.AcroForm.Fields[template.Root.Pages.Kids[0].Annots.index(field)].AP = PdfDict(N = xobj)
-
-		#Change the value when field is foccused
-		field.update(PdfDict(V=str(obj[label])))
-
-	filename = 'test-out-' + str(xlsx_data.index(obj) + 1) + '.pdf'
-	PdfWriter().write(filename, template)
-	print filename + " was generated."
+for obj in data:
+	for field_name in pdf_form.field_names():
+		pdf_form.update_field(field_name, str(obj[field_name]))
+	pdf_form.gen_pdf('filled-template-' + str(data.index(obj) + 1) + ".pdf")

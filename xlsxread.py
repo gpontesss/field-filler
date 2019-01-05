@@ -1,12 +1,9 @@
-#Reading data from .xlsx file test
-from openpyxl import load_workbook
+#Author: gpontesss
+#Date of creation: 04-01-2019
+#Description:
+#	Reading data from .xlsx file test
 
-#Open .xlsx file as Workbook
-wb = load_workbook('data.xlsx')
-#Open sheet on wb acessing it by name index
-ws = wb[u'fields-data']
-
-def read_data():
+def read_worksheet(ws):
 	map = {}
 	data = []
 
@@ -23,5 +20,3 @@ def read_data():
 		data.append(person_data)
 
 	return data
-
-print read_data()

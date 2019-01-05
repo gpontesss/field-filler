@@ -1,3 +1,8 @@
+#Author: gpontesss
+#Date of creation: 04-01-2019
+#Description:
+#	PdfForm class with utilities for handling pdf forms more easily.
+
 #Importing pdfrw ibrary utilities
 from pdfrw import PdfReader, PdfWriter, PdfDict, IndirectPdfDict, PdfName
 
@@ -51,10 +56,3 @@ class PdfForm():
 	def gen_pdf(self, name):
 		PdfWriter().write(name, self.file)
 		return name + " was created."
-		
-
-template = PdfForm('tester.pdf')
-template.update_field('(name)', 'THIS IS THE UPDATED NAME')
-template.update_field('(email)', 'UPDATEDEMAIL@EMAIL.COM')
-
-print template.gen_pdf('OUT.pdf')
