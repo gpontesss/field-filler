@@ -51,7 +51,16 @@ class PdfForm():
 
 		#Change the value when field is foccused
 		field.update(PdfDict(V=value))
+		self.fields_info = self.read_fields()
 		return field
+
+	#Add invalid value (index not on list) handling to not raise error
+	def change_field_name(self, old_name, new_name):
+		file_fields = self.file.Root.AcroForm.Fields
+		field = file_fields[self.field_index(old_name)]
+
+		field.update(PdfDict(T = new_name))
+		self.fields_info = self.read_fields()
 
 	def gen_pdf(self, name):
 		PdfWriter().write(name, self.file)
