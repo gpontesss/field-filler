@@ -6,7 +6,7 @@ A brief script for filling fields of a PDF with forms with data fetched from a .
 - Name your xlsx data.xlsx and your target worsheet as 'data'.
 
 ## Requirements
-You will need to install pdfrw (read/write .pdf) and openpyxl (read/write .xlsx) libraries. To do so, run the following, if you're on linux:
+You will need to install pdfrw (read/write .pdf) and openpyxl (read/write .xlsx) libraries. To do so, run the following, if you're on ubuntu/debian:
 
 ``` bash
 sudo pip install pdfrw openpyxl
